@@ -9,20 +9,31 @@ Promise.promisifyAll(mongoose);
 const Product = require('./models/product');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use(bodyParser.json());
 
 app.get('/api/product', (req, res) => {
-    res.status(200).send({products: []});
+    Product.find({}).then((products) => {
+        if(!products) 
+            res.status(404).send({message: `El producto no existe`});
+        
+        res.status(200).send({ products });
+    }).catch((err) => {
+        res.status(500).send({message: `Error al guardar los datos: ${err}`});
+    });
 });
 
 app.get('/api/product/:productId', (req, res) => {
     let productId = req.params.productId;
     
     Product.findById(productId).then((product) => {
+        
+        if(!product) 
+            res.status(404).send({message: `El producto no existe`});
         res.status(200).send({ product });
+        
     }).catch((err) => {
         res.status(500).send({message: `Error al guardar los datos: ${err}`});
     });
