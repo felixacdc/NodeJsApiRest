@@ -19,7 +19,13 @@ app.get('/api/product', (req, res) => {
 });
 
 app.get('/api/product/:productId', (req, res) => {
+    let productId = req.params.productId;
     
+    Product.findById(productId).then((product) => {
+        res.status(200).send({ product });
+    }).catch((err) => {
+        res.status(500).send({message: `Error al guardar los datos: ${err}`});
+    });
 });
 
 app.post('/api/product', (req, res) => {
