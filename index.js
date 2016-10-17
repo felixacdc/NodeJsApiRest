@@ -9,7 +9,7 @@ Promise.promisifyAll(mongoose);
 const Product = require('./models/product');
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 5000;
 
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use(bodyParser.json());
@@ -58,11 +58,28 @@ app.post('/api/product', (req, res) => {
 });
 
 app.put('/api/product/:productId', (req, res) => {
+    let productId = req.params.productId;
+    let update = req.body;
     
+    Product.findByIdAndUpdate(productId, update).then((product) => {
+        res.status(200).send({ message: "Producto actualizado." });
+    }).catch((err) => {
+        res.status(500).send({message: `Error al guardar los datos: ${err}`});
+    });
 });
 
 app.delete('/api/product/:productId', (req, res) => {
+    let productId = req.params.productId;
     
+    Product.findById(productId).then((product) => {
+        product.remove().then(() => {
+            res.status(200).send({ message: "El producto ha sido eliminado." });
+        }).catch((err) => {
+            res.status(500).send({message: `Error al guardar los datos: ${err}`});
+        });
+    }).catch((err) => {
+        res.status(500).send({message: `Error al guardar los datos: ${err}`});
+    });
 });
 
 mongoose.connect('mongodb://localhost/shop', (err, res) => {
