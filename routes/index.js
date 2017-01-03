@@ -2,6 +2,7 @@
 
 const express = require('express'),
       ProductCtrl = require("../controllers/product"),
+      auth = require('../middlewares/auth')
       api = express.Router();
 
 api.get('/product', ProductCtrl.getProducts);
@@ -13,5 +14,9 @@ api.post('/product', ProductCtrl.saveProduct);
 api.put('/product/:productId', ProductCtrl.updateProduct);
 
 api.delete('/product/:productId', ProductCtrl.deleteProduct);
+
+api.get('/private', auth.isArray, (req, res) => {
+    res.status(200).send({ message: 'Tienes Acceso' });
+});
 
 module.exports = api;
